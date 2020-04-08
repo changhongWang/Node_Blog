@@ -4,8 +4,8 @@
   "description": "",
   "main": "./src/bin/www.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=dev nodemon ./src/bin/www.js",
-    "prod": "cross-env NODE_ENV=prod nodemon ./src/bin/www.js"
+    "dev": "cross-env NODE_ENV=dev nodemon ./bin/www.js",
+    "prod": "cross-env NODE_ENV=prod nodemon ./bin/www.js"
   },
   "author": "",
   "license": "ISC",

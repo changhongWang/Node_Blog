@@ -1,5 +1,6 @@
 const qs = require('querystring');
 const { get, set } = require('./src/db/redis');
+const { access } = require('./src/util/log');
 const handleBlogRouter = require('./src/router/blog');
 const handleUserRouter = require('./src/router/user');
 const { getCookieExpires } = require('./src/common/util');
@@ -13,7 +14,7 @@ const SESSION_DATA = {};
  */
 const getPostData = (req) => {
     return new Promise((resolve, reject) => {
-        if (req !== 'POST') {
+        if (req.method !== 'POST') {
             resolve({});
             return;
         }
@@ -31,7 +32,7 @@ const getPostData = (req) => {
                 resolve({});
                 return;
             }
-            res.end(
+            resolve(
                 JSON.parse(postData)
             )
         })
@@ -39,6 +40,9 @@ const getPostData = (req) => {
 }
 
 const serverHandler = (req, res) => {
+    // 记录日志
+    access(`[INFO] ${req.method} -- ${req.url} -- ${req.headers['user-agent']} -- ${Date.now()}`);
+
     // 返回数据格式 JSON
     res.setHeader('Content-type', 'application/json')
 
@@ -86,10 +90,10 @@ const serverHandler = (req, res) => {
             req.session = sessionData;
         }
 
-        return getPostData(req);
+        return getPostData(req, res);
     }).then(postData => {
         // 处理postData
-        res.body = postData;
+        req.body = postData;
 
         // 处理blog路由
         const blogResult = handleBlogRouter(req, res);

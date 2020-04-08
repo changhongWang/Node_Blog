@@ -17,12 +17,18 @@ const handleBlogRouter = (req, res) => {
 
     // 获取博客列表
     if (method === 'GET' && req.path === '/api/blog/list') {
-        const loginCheckResult = loginCheck(req);
-        if (loginCheckResult) {
-            return loginCheck;
+        const { keyword = '', isadmin = '' } = req.query
+        let { author = '' } = req.query
+
+        if (isadmin) {
+            // 管理员界面
+            const loginCheckResult = loginCheck(req);
+            if (loginCheckResult) {
+                return loginCheckResult;
+            }
+            author = req.session.username;
         }
 
-        const { author = '', keyword = '' } = req.query
         const result = getList(author, keyword);
         return result.then(listData => {
             return new SuccessModel(listData, '获取博客列表接口成功');
@@ -33,7 +39,7 @@ const handleBlogRouter = (req, res) => {
     if (method === 'GET' && req.path === '/api/blog/detail') {
         const loginCheckResult = loginCheck(req);
         if (loginCheckResult) {
-            return loginCheck;
+            return loginCheckResult;
         }
         
         const result = getDetail(id);
@@ -46,7 +52,7 @@ const handleBlogRouter = (req, res) => {
     if (method === 'POST' && req.path === '/api/blog/new') {
         const loginCheckResult = loginCheck(req);
         if (loginCheckResult) {
-            return loginCheck;
+            return loginCheckResult;
         }
         
         req.body.author = req.session.username;
@@ -60,7 +66,7 @@ const handleBlogRouter = (req, res) => {
     if (method === 'POST' && req.path === '/api/blog/update') {
         const loginCheckResult = loginCheck(req);
         if (loginCheckResult) {
-            return loginCheck;
+            return loginCheckResult;
         }
         
         const result = updateBlog(id, req.body);
@@ -69,14 +75,14 @@ const handleBlogRouter = (req, res) => {
                 return new SuccessModel(updateRes, '更新博客接口');
             }
             return new ErrorModel('更新博客失败');
-        }) 
+        })
     }
 
     // 删除博客
     if (method === 'POST' && req.path === '/api/blog/delete') {
         const loginCheckResult = loginCheck(req);
         if (loginCheckResult) {
-            return loginCheck;
+            return loginCheckResult;
         }
         
         const author = req.session.username;
